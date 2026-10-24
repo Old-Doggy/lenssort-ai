@@ -15,7 +15,7 @@
 <p align="center">
   <a href="README.md">English</a> ·
   <a href="docs/architecture-and-demo-flow.md">架构与演示流程</a> ·
-  <a href="docs/resume-bullets.md">简历描述参考</a>
+  <a href="docs/architecture-and-demo-flow.md">演示流程</a>
 </p>
 
 ![LensSort AI 抽象视觉标识](src/assets/hero.png)

@@ -44,7 +44,7 @@ CPU、AMD Radeon 880M 核显、NVIDIA RTX 5070 Ti 独显和 AMD NPU 的当前输
 - F5.4 收口：完成。
 - 不修改当前分类模型、阈值或六类规则。
 - 不因代理指标较低自动重开 F6c；F6c 原定两轮性能优化已经按停止规则关闭。
-- 不把本报告中的 Accuracy、Macro-F1 或 Recall 写入简历作为“真实准确率”。
+- 不把本报告中的 Accuracy、Macro-F1 或 Recall 当作真实相册准确率。
 
 ## 5. 证据
 

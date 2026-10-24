@@ -15,7 +15,7 @@
 <p align="center">
   <a href="README.zh-CN.md">中文文档</a> ·
   <a href="docs/architecture-and-demo-flow.md">Architecture</a> ·
-  <a href="docs/resume-bullets.md">Resume notes</a>
+  <a href="docs/architecture-and-demo-flow.md">Demo flow</a>
 </p>
 
 ![LensSort AI visual mark](src/assets/hero.png)
