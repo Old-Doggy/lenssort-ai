@@ -28,7 +28,17 @@ if errorlevel 1 goto :failed
 call npm.cmd run doctor
 if errorlevel 1 goto :failed
 echo.
-echo Setup complete. Run the web control script next time.
+echo Base setup complete. Basic classification is ready without Ollama.
+echo.
+choice /C YN /N /M "Install the optional local Qwen 3.5 4B vision model now? [Y/N] "
+if errorlevel 2 goto :base_complete
+call npm.cmd run setup:vision
+if errorlevel 1 goto :failed
+:base_complete
+echo.
+echo For local natural-language image explanations, run 安装本地视觉模型.cmd once.
+echo It installs Ollama if needed and downloads the recommended Qwen 3.5 4B model.
+echo Setup does not install a startup service.
 pause
 exit /b 0
 :failed

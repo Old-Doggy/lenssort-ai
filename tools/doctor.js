@@ -7,6 +7,8 @@ import { projectRoot } from './runtime-paths.js'
 import { access } from 'node:fs/promises'
 import path from 'node:path'
 import { chromium } from 'playwright'
+import { ollamaRequest } from './model-resources.js'
+import { modelProfiles } from './model-resource-policy.js'
 
 const execute = promisify(execFile)
 const checks = []
@@ -32,8 +34,23 @@ const assets = []
 for (const asset of modelAssets) assets.push(await verifyAsset(projectRoot, asset))
 const missing = assets.filter(asset => !asset.verified)
 add('models', missing.length ? 'fail' : 'pass', missing.length ? `缺少或校验失败 ${missing.length}/${assets.length} 个模型资源` : `模型资源已校验 ${assets.length}/${assets.length}`, { missing: missing.map(asset => asset.path) })
-try { await execute(process.platform === 'win32' ? 'where.exe' : 'which', ['ollama'], { windowsHide: true, timeout: 3000 }); add('ollama', 'pass', '已找到 Ollama；视觉描述可用（仍需模型已安装）') }
-catch { add('ollama', 'warn', '未找到 Ollama；基础分类仍可用，视觉描述与复杂复核不可用') }
+let ollamaInstalled = false
+try {
+  await execute(process.platform === 'win32' ? 'where.exe' : 'which', [process.platform === 'win32' ? 'ollama.exe' : 'ollama'], { windowsHide: true, timeout: 3000 })
+  ollamaInstalled = true
+  add('ollama-installed', 'pass', '已找到 Ollama；可准备本地视觉模型')
+} catch { add('ollama-installed', 'warn', '未找到 Ollama；基础分类仍可用，可双击“安装本地视觉模型.cmd”') }
+let installedVisionModels = []
+try {
+  const tags = await ollamaRequest('/api/tags', {}, 3000)
+  installedVisionModels = (tags.models ?? []).map(item => item.name || item.model).filter(Boolean)
+  add('ollama-service', 'pass', 'Ollama 本地服务正在运行；照片不会发送到云端')
+} catch {
+  add('ollama-service', ollamaInstalled ? 'warn' : 'warn', ollamaInstalled ? 'Ollama 已安装但服务未运行；启动网页控制时会按需启动' : '未连接 Ollama；基础分类不受影响')
+}
+const supportedModels = modelProfiles().filter(profile => profile.id !== 'off').map(profile => profile.id)
+const installedSummary = supportedModels.filter(model => installedVisionModels.includes(model))
+add('ollama-vision-models', installedSummary.length ? 'pass' : 'warn', installedSummary.length ? `已安装视觉模型：${installedSummary.join('、')}` : '尚未安装项目支持的视觉模型；可运行 npm run setup:vision 或双击安装脚本', { installed: installedSummary, supported: supportedModels })
 const failed = checks.filter(check => check.status === 'fail')
 const result = { status: failed.length ? 'failed' : 'passed', root: projectRoot, checks }
 console.log(JSON.stringify(result, null, 2))

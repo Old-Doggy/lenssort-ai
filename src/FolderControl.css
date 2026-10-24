@@ -191,6 +191,7 @@
 .model-option-hint strong { color: #176e55; font-size: 13px; }
 .model-option-hint span { font-size: 14px; }
 .model-option-hint small { color: #6a8073; font-size: 12px; }
+.model-install-hint { margin: 10px 0 0; padding: 10px 13px; border: 1px dashed #d2b979; border-radius: 10px; color: #76551e; background: #fffaf0; line-height: 1.65; }
 .force-model-button { display: grid; gap: 2px; margin-top: 8px; color: #8a5524 !important; border-color: #e3c08d !important; background: #fff8e8 !important; text-align: left; }
 .force-model-button span { color: #94704c; font-size: 11px; font-weight: 400; }
 .model-advice-options { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }

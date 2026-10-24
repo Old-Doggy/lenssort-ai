@@ -95,8 +95,9 @@ The core stack is React + Vite on the front end and a Node.js local control serv
 1. Install Node.js `22.12+` (Node.js 24 LTS is recommended).
 2. Clone this repository.
 3. Open the project folder and double-click `首次安装.cmd`.
+4. At the final prompt, choose `Y` to prepare the optional local Qwen 3.5 4B vision model now, or choose `N` to keep basic classification only. You can run `安装本地视觉模型.cmd` later.
 
-The installer runs dependency installation, model setup, browser setup, and a production build. It does not install a startup service.
+The installer runs dependency installation, base model setup, browser setup, and a production build. The vision-model download is an explicit optional step because it uses several GB of disk space. It does not install a startup service.
 
 ### Daily use
 
@@ -110,7 +111,14 @@ Do not double-click `index.html`: folder access and progress updates require the
 
 ### Optional local descriptions
 
-The basic classifier works without Ollama. If you want local natural-language image explanations, install Ollama and a compatible local vision model. The app does not send photos to a cloud API.
+Basic classification works without Ollama. To enable the complete local natural-language image explanation path:
+
+1. Run `安装本地视觉模型.cmd` once after `首次安装.cmd` finishes.
+2. Confirm the disk-space prompt. The script installs the official Ollama Windows package if needed.
+3. The script downloads the recommended `qwen3.5:4b` vision model from Ollama and verifies it through the local service.
+4. Start `启动网页控制.cmd`; the installed model becomes selectable in the browser.
+
+The model is not bundled in Git because it is several GB and has separate model terms. The installer is repeatable and does not download a model that is already present. Use `npm run setup:vision -- --model=qwen3.5:9b` for the larger precision-first option. All image requests stay on the local Ollama service; no cloud API is configured.
 
 ## Useful commands
 
@@ -118,7 +126,8 @@ Run these from the project directory:
 
 | Command | Purpose |
 | --- | --- |
-| `npm run doctor` | Check Node.js, Python, browser, models, and Ollama availability |
+| `npm run doctor` | Check Node.js, Python, browser, base models, Ollama, and installed vision models |
+| `npm run setup:vision` | Install Ollama if needed and prepare the recommended local vision model |
 | `npm run test:all` | Run the complete regression suite |
 | `npm run build` | Build the production web app |
 | `npm run lint` | Run Oxlint |

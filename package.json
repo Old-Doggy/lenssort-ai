@@ -19,6 +19,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "setup:models": "node tools/setup-model-assets.js",
+    "setup:vision": "node tools/setup-vision-model.js --install-ollama",
     "verify:models": "node tools/verify-model-assets.js",
     "doctor": "node tools/doctor.js",
     "test:core": "node --test tools/verify-asset-install.test.js tools/verify-model-lifecycle.test.js tools/verify-person-presence-review.test.js tools/verify-vision-output.test.js tools/verify-vision-policy.test.js tools/verify-vision-review.test.js",
