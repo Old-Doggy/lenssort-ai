@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">LensSort AI photo sorting workspace</title>
+  <desc id="desc">A camera lens scanning a set of organized photo cards</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#092f36"/>
+      <stop offset="1" stop-color="#11765f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5c86a"/>
+      <stop offset="1" stop-color="#ef8067"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#032329" flood-opacity=".28"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="620" rx="42" fill="url(#bg)"/>
+  <circle cx="1010" cy="80" r="210" fill="#ffffff" opacity=".04"/>
+  <circle cx="170" cy="560" r="250" fill="#65c89b" opacity=".08"/>
+  <path d="M0 500C210 430 320 570 520 488s320-36 680 70v62H0Z" fill="#052a35" opacity=".45"/>
+  <g filter="url(#shadow)" transform="translate(95 125) rotate(-7 260 180)">
+    <rect width="430" height="290" rx="28" fill="#f8fbf4"/>
+    <rect x="22" y="22" width="386" height="190" rx="18" fill="#dcefe8"/>
+    <path d="M22 182 130 92l65 48 86-92 127 134v30H22Z" fill="#6ca69a"/>
+    <circle cx="302" cy="82" r="25" fill="#f6c86e"/>
+    <path d="M22 176 137 113l74 54 68-45 129 90H22Z" fill="#276c71" opacity=".85"/>
+    <rect x="22" y="236" width="112" height="14" rx="7" fill="#0e6f63" opacity=".7"/>
+    <rect x="150" y="236" width="72" height="14" rx="7" fill="#d8e7dc"/>
+    <rect x="238" y="236" width="102" height="14" rx="7" fill="#d8e7dc"/>
+  </g>
+  <g filter="url(#shadow)" transform="translate(690 104) rotate(7 200 180)">
+    <rect width="390" height="270" rx="28" fill="#ffffff"/>
+    <rect x="22" y="22" width="346" height="170" rx="18" fill="#263d58"/>
+    <path d="M22 175 120 104l68 50 76-101 104 92v30H22Z" fill="#f07c63"/>
+    <circle cx="276" cy="78" r="24" fill="#f4c768"/>
+    <rect x="22" y="217" width="92" height="14" rx="7" fill="#11765f"/>
+    <rect x="132" y="217" width="74" height="14" rx="7" fill="#d5e6dc"/>
+    <rect x="224" y="217" width="84" height="14" rx="7" fill="#d5e6dc"/>
+  </g>
+  <g filter="url(#shadow)" transform="translate(410 180)">
+    <circle cx="190" cy="160" r="150" fill="#0b3d45" stroke="#eaf8ed" stroke-width="12"/>
+    <circle cx="190" cy="160" r="108" fill="#071f2b" stroke="#65c89b" stroke-width="7"/>
+    <circle cx="190" cy="160" r="72" fill="#102e42" stroke="#f6c86e" stroke-width="8"/>
+    <circle cx="190" cy="160" r="42" fill="#071d2a"/>
+    <circle cx="174" cy="144" r="12" fill="#ffffff" opacity=".72"/>
+    <path d="M190 10v-32M190 342v-32M40 160H8M372 160h-32" stroke="#f4c768" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+    <circle cx="190" cy="160" r="178" fill="none" stroke="#65c89b" stroke-width="3" stroke-dasharray="10 16" opacity=".65" filter="url(#glow)"/>
+  </g>
+  <g transform="translate(860 420)">
+    <rect width="210" height="58" rx="18" fill="#e9f8ed"/>
+    <circle cx="31" cy="29" r="11" fill="#11765f"/>
+    <path d="m25 29 5 5 9-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="55" y="36" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#145c4e">Sorted locally</text>
+  </g>
+  <path d="M566 384 710 455" stroke="#f6c86e" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 15" opacity=".7"/>
+</svg>

@@ -18,7 +18,9 @@
   <a href="docs/architecture-and-demo-flow.md">演示流程</a>
 </p>
 
-![LensSort AI 抽象视觉标识](src/assets/hero.png)
+<p align="center">
+  <img src="src/assets/lenssort-cover.svg" alt="LensSort AI 照片整理工作台" width="900" />
+</p>
 
 ## 一句话介绍
 

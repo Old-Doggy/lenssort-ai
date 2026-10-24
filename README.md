@@ -18,7 +18,9 @@
   <a href="docs/architecture-and-demo-flow.md">Demo flow</a>
 </p>
 
-![LensSort AI visual mark](src/assets/hero.png)
+<p align="center">
+  <img src="src/assets/lenssort-cover.svg" alt="LensSort AI photo sorting workspace" width="900" />
+</p>
 
 ## The short version
 
