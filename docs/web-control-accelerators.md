@@ -34,7 +34,7 @@
 本机环境已安装；无需用户再下载权重。新机器从 Python 3.12 创建项目 .venv-winml，只装一个 WindowsML ORT 包，避免 onnxruntime-winml 与 onnxruntime-windowsml 文件相互覆盖：
 
 ```powershell
-& 'C:\Python312\python.exe' -m venv .venv-winml
+& '<python-executable>' -m venv .venv-winml
 & '.\.venv-winml\Scripts\python.exe' -m pip install --pre 'wasdk-Microsoft.Windows.AI.MachineLearning[all]==2.3.2.dev10' 'wasdk-Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap==2.3.2.dev10' numpy --no-input --index-url https://pypi.org/simple
 & '.\.venv-winml\Scripts\python.exe' tools/winml-discover.py --ensure
 ```
