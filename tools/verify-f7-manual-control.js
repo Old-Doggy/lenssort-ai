@@ -1,0 +1,85 @@
+import assert from 'node:assert/strict'
+import path from 'node:path'
+import { createHash } from 'node:crypto'
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { chromium } from 'playwright'
+import sharp from 'sharp'
+
+const origin = process.env.LENSSORT_F7_ORIGIN ?? 'http://127.0.0.1:4317'
+const workspace = await mkdtemp(path.join(process.cwd(), 'data', 'f7-manual-acceptance-'))
+const input = path.join(workspace, 'input')
+const output = path.join(workspace, 'output')
+await mkdir(input, { recursive: true })
+await mkdir(output, { recursive: true })
+const sourceBytes = await sharp(await readFile('data/eval/photos/portrait.jpg')).modulate({ brightness: 1.35 }).jpeg().toBuffer()
+const checks = []
+const errors = []
+const browser = await chromium.launch({ channel: 'msedge', headless: true })
+try {
+  const page = await browser.newPage({ viewport: { width: 1360, height: 1000 } })
+  page.on('pageerror', error => errors.push(error.message))
+  await page.goto(origin)
+  await page.locator('summary').click()
+  await page.getByLabel('照片来源文件夹').fill(input)
+  await page.getByLabel('分类结果文件夹').fill(output)
+  await page.getByLabel('推理设备').selectOption('cpu')
+  const before = await (await fetch(origin + '/api/status')).json()
+  assert.equal(before.phase, 'stopped')
+  const configured = await fetch(origin + '/api/config', { method: 'POST', headers: { 'content-type': 'application/json', 'x-lenssort-token': before.token }, body: JSON.stringify({ input, output, backend: 'cpu' }) })
+  assert.equal(configured.status, 200)
+  await writeFile(path.join(input, 'before-start.jpg'), sourceBytes)
+  await new Promise(resolve => setTimeout(resolve, 4500))
+  const beforeStart = await (await fetch(origin + '/api/status')).json()
+  assert.equal(beforeStart.config.input, input)
+  assert.equal(beforeStart.phase, 'stopped')
+  assert.equal(beforeStart.records.some(record => record.name === 'before-start.jpg'), false)
+  checks.push('未点击一键筛选时，新照片不会被处理')
+  await page.locator('.quick-action.primary').click()
+  await page.getByRole('button', { name: /停止筛选/ }).waitFor({ timeout: 30000 })
+  const running = await (await fetch(origin + '/api/status')).json()
+  assert.equal(running.phase, 'running')
+  assert.equal(running.config.input, input)
+  assert.equal(running.config.output, output)
+  assert.equal(await page.getByLabel('照片来源文件夹').isDisabled(), true)
+  assert.equal(await page.getByLabel('推理设备').isDisabled(), true)
+  checks.push('一键筛选启动目录监听并锁定目录配置')
+  await writeFile(path.join(input, 'started.jpg'), sourceBytes)
+  await page.getByRole('heading', { name: 'started.jpg', exact: true }).waitFor({ timeout: 30000 })
+  const afterStart = await (await fetch(origin + '/api/status')).json()
+  const startedRecord = afterStart.records.find(record => record.name === 'started.jpg')
+  assert.equal(startedRecord.category, '单人')
+  assert.equal(startedRecord.status, 'done')
+  assert.deepEqual(await readFile(startedRecord.output), sourceBytes)
+  assert.deepEqual(await readFile(path.join(input, 'started.jpg')), sourceBytes)
+  checks.push('输入目录新照片自动识别并归类')
+  await page.getByRole('button', { name: /一键精选图片/ }).click()
+  await page.getByRole('status').filter({ hasText: /已挑出/ }).waitFor({ timeout: 30000 })
+  const curated = await (await fetch(origin + '/api/status')).json()
+  const selected = curated.records.filter(record => record.curated)
+  assert.equal(selected.length, 1)
+  const manifest = JSON.parse(await readFile(path.join(output, '精选', 'selection.json'), 'utf8'))
+  assert.equal(manifest.selected.length, 1)
+  const selectedHash = createHash('sha256').update(await readFile(manifest.selected[0].output)).digest('hex')
+  assert.equal(selectedHash, createHash('sha256').update(sourceBytes).digest('hex'))
+  assert.deepEqual(await readFile(path.join(input, 'before-start.jpg')), sourceBytes)
+  checks.push('一键精选图片生成精选副本并保持原图内容不变')
+  await page.getByRole('button', { name: /停止筛选/ }).click()
+  await page.getByRole('button', { name: /一键筛选/ }).waitFor({ timeout: 30000 })
+  const stopped = await (await fetch(origin + '/api/status')).json()
+  assert.equal(stopped.phase, 'stopped')
+  await writeFile(path.join(input, 'after-stop.jpg'), sourceBytes)
+  await new Promise(resolve => setTimeout(resolve, 4500))
+  const afterStop = await (await fetch(origin + '/api/status')).json()
+  assert.equal(afterStop.records.some(record => record.name === 'after-stop.jpg'), false)
+  assert.equal(afterStop.phase, 'stopped')
+  checks.push('停止筛选后新照片不会继续处理')
+  await page.screenshot({ path: 'artifacts/f7-manual-control.png', fullPage: true })
+  assert.deepEqual(errors, [])
+  const report = { status: 'passed', createdAt: new Date().toISOString(), origin, workspace, checks, errors, selectedCount: selected.length, stoppedPhase: stopped.phase, records: afterStop.records, originalSha256: selectedHash, fixture: '公开人像的本地亮度变换，仅用于工程流程验收，不是审美或精度评估', automatedBrowser: true, humanTrial: false, stoppedObservationMs: 4500 }
+  await writeFile('artifacts/f7-manual-control-verification.json', JSON.stringify(report, null, 2))
+  console.log(JSON.stringify(report, null, 2))
+} catch (error) {
+  const report = { status: 'failed', createdAt: new Date().toISOString(), origin, workspace, checks, errors, error: error.stack }
+  await writeFile('artifacts/f7-manual-control-failure.json', JSON.stringify(report, null, 2))
+  throw error
+} finally { await browser.close() }
