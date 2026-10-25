@@ -163,7 +163,7 @@ export default function FolderControl() {
   const activityMessage = status?.phase === 'starting' ? progress?.message ?? '正在加载本地模型与识别组件…' : progress?.message ?? (running ? '把照片放入来源文件夹，系统会自动分类' : '准备好后，点击一键筛选开始')
   const visible = records.filter(record => filter === '全部' || (filter === '辅助推荐' ? record.curated : filter === '失败' ? record.status === 'failed' : record.category === filter))
   return <main className="folder-control">
-    <header className="control-header"><div className="control-brand"><span className="control-brand-mark">L</span><span>LensSort AI</span></div><a href="?legacy=1">旧版实验界面</a></header>
+    <header className="control-header"><div className="control-brand"><span className="control-brand-mark">L</span><span>LensSort AI</span></div><a href="?legacy=1">实验入口</a></header>
     <section className="control-intro"><p>LOCAL PHOTO ORGANIZER</p><h1>照片放进去，剩下的交给 LensSort</h1><span className="two-line-copy intro-copy"><span>自动分类为主，辅助推荐供参考</span><span>原图始终保留，可随时人工修正</span></span></section>
     <section className="control-quick-actions" aria-label="一键操作">
       <button type="button" className="quick-action primary" disabled={busy || !status || status.phase === 'starting' || status.phase === 'stopping'} onClick={() => void operate(!running)}><strong>{busy ? '正在处理…' : running ? '停止筛选' : '一键筛选'}</strong><span className="two-line-copy"><span>{running ? '仅处理本次照片，完成后自动停止' : '识别当前文件夹照片并归类'}</span><span>{running ? '任务结束后不会继续监控' : '处理完成后自动停止'}</span></span></button>

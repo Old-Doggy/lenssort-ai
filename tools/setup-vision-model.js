@@ -15,6 +15,7 @@ export const supportedVisionModels = Object.freeze({
 })
 
 const officialInstallerUrl = 'https://ollama.com/download/OllamaSetup.exe'
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 
 export function parseVisionModel(value = 'qwen3.5:4b') {
   const model = String(value).trim().toLowerCase()
@@ -53,6 +54,15 @@ async function downloadOfficialInstaller() {
   } finally { await rm(file, { force: true }).catch(() => {}) }
 }
 
+async function findExecutableAfterInstall() {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const executable = await findExecutable()
+    if (executable) return executable
+    await wait(1000)
+  }
+  return null
+}
+
 async function installedModels() {
   try {
     const base = String(process.env.LENSSORT_OLLAMA_URL || 'http://127.0.0.1:11434').replace(/\/$/, '')
@@ -76,18 +86,24 @@ export async function prepareVisionModel({ model = 'qwen3.5:4b', installOllama =
   if (!executable && !installOllama) throw new Error('未找到 Ollama；请使用“安装本地视觉模型.cmd”，或先从 https://ollama.com/download 安装 Ollama')
   if (!executable) {
     await downloadOfficialInstaller()
-    executable = await findExecutable()
+    executable = await findExecutableAfterInstall()
   }
   if (!executable) throw new Error('Ollama 安装后仍未找到 ollama.exe；请重启终端或确认安装完成')
-  const lifecycle = await ensureOllama()
-  if (lifecycle.status !== 'started' && lifecycle.status !== 'reused') throw new Error(lifecycle.message)
+  const previousExecutable = process.env.LENSSORT_OLLAMA_EXE
+  if (!previousExecutable) process.env.LENSSORT_OLLAMA_EXE = executable
+  let lifecycle
   try {
+    lifecycle = await ensureOllama()
+    if (lifecycle.status !== 'started' && lifecycle.status !== 'reused') throw new Error(lifecycle.message)
     const before = await installedModels()
     if (!before.includes(selected)) await pullModel(executable, selected)
     const after = await installedModels()
     if (!after.includes(selected)) throw new Error(`下载结束但未检测到 ${selected}；请运行 npm run doctor 检查 Ollama`)
     return { model: selected, installed: true, service: lifecycle.status, executable }
-  } finally { if (!keepService) await lifecycle.stop() }
+  } finally {
+    if (lifecycle && !keepService) await lifecycle.stop()
+    if (!previousExecutable) delete process.env.LENSSORT_OLLAMA_EXE
+  }
 }
 
 export async function main(argv = process.argv.slice(2)) {

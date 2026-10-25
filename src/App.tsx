@@ -1602,7 +1602,7 @@ function App() {
           <div className="brand-mark">L</div>
           <div>
             <div className="brand-name">LensSort <span>AI</span></div>
-            <div className="brand-caption">本地优先的照片精选助手</div>
+            <div className="brand-caption">本地优先的照片分类工具</div>
           </div>
         </div>
         <div className="privacy-pill"><span className="status-dot" /> 图片默认只在本地处理</div>
