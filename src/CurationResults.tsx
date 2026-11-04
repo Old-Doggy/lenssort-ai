@@ -13,7 +13,7 @@ export default function CurationResults({ record }: { record: CurationRecord }) 
   return <><SubjectQuality record={record} /><section className="photo-curation-explanation" aria-label="辅助推荐依据">
     <div className="photo-curation-title"><strong>为什么推荐这张照片</strong><span>仅供参考，不代表最符合你的审美</span></div>
     <p className="two-line-copy">{detail.selectionBasis === 'technical-fallback' ? <><span>审美模型不可用，本张按技术质量回退保留</span><span>不代表模型认为它一定好看</span></> : <><span>这张照片在本批中获得较高的专用审美模型相对排名</span><span>并通过技术风险与相似照片筛选</span></>}</p>
-    <div className="photo-curation-ranks">{detail.aestheticRank !== null && detail.aestheticRank !== undefined && <span>LAION 审美排名：{Math.round(detail.aestheticRank)}/100</span>}{detail.musiqRank !== null && detail.musiqRank !== undefined && <span>MUSIQ 辅助排名：{Math.round(detail.musiqRank)}/100</span>}</div>
+    <div className="photo-curation-ranks">{detail.aestheticRank !== null && detail.aestheticRank !== undefined && <span>审美参考排序：{Math.round(detail.aestheticRank)}/100</span>}{detail.musiqRank !== null && detail.musiqRank !== undefined && <span>画面质量参考：{Math.round(detail.musiqRank)}/100</span>}</div>
     <ul>{detail.qualityReasons.map(reason => <li key={reason}>{reason}</li>)}</ul>
   </section></>
 }

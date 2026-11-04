@@ -62,3 +62,8 @@ docs/windows-shell-incidents-*.md
 docs/*-incidents.md
 docs/plan-edit-incident-*.md
 docs/environment.md
+
+# Internal implementation plans and phase reports
+docs/frontend-baseline-phase*.md
+docs/frontend-phase[1-8]-*.md
+docs/frontend-redesign-plan-final.md

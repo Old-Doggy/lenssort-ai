@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import path from 'node:path'
 import os from 'node:os'
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { chromium } from 'playwright'
 import { createControlServer } from './control-server.js'
 
@@ -20,22 +20,20 @@ try {
       const pageErrors = []
       page.on('pageerror', error => pageErrors.push(error.message))
       await page.goto(server.origin)
-      await page.locator('summary').click()
       await page.getByLabel('照片来源文件夹').fill(path.join(workspace, channel, 'input'))
       await page.getByLabel('分类结果文件夹').fill(path.join(workspace, channel, 'output'))
       await page.getByLabel('推理设备').selectOption('cpu')
-      await page.getByRole('button', { name: '开始自动分类', exact: true }).click()
-      await page.getByRole('button', { name: '停止监听', exact: true }).waitFor({ timeout: 30000 })
       const bytes = await readFile('data/eval/photos/portrait.jpg')
       const filename = channel + '-portrait.jpg'
+      await mkdir(path.join(workspace, channel, 'input'), { recursive: true })
       await writeFile(path.join(workspace, channel, 'input', filename), bytes)
+      await page.getByRole('button', { name: /一键筛选/ }).click()
       await page.getByRole('heading', { name: filename, exact: true }).waitFor({ timeout: 30000 })
       const card = page.locator('article').filter({ has: page.getByRole('heading', { name: filename, exact: true }) })
       assert.equal(await card.locator('.control-category').textContent(), '单人')
       assert.deepEqual(pageErrors, [])
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
-      await page.getByRole('button', { name: '停止监听', exact: true }).click()
-      await page.getByRole('button', { name: '开始自动分类', exact: true }).waitFor()
+      await page.getByRole('button', { name: /一键筛选/ }).waitFor()
       checks.push(channel + ' opens control page and automatically classifies a new photo')
       results.push({ browser: channel, category: '单人', pageErrors: pageErrors.length, mobileOverflow: false })
     } catch (error) {

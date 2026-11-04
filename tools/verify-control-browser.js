@@ -14,7 +14,6 @@ try {
   const page = await browser.newPage({ viewport: { width: 1360, height: 1100 } })
   page.on('pageerror', error => errors.push(error.message))
   await page.goto(server.origin)
-  await page.locator('summary').click()
   const input = path.join(workspace, 'input')
   const output = path.join(workspace, 'output')
   await mkdir(input, { recursive: true })
