@@ -16,7 +16,6 @@ try {
   const page = await browser.newPage({ viewport: { width: 1360, height: 1000 } })
   page.on('pageerror', error => errors.push(error.message))
   await page.goto(server.origin)
-  await page.locator('summary').click()
   await page.getByLabel('照片来源文件夹').fill(input)
   await page.getByLabel('分类结果文件夹').fill(output)
   await page.getByLabel('推理设备').selectOption('cpu')

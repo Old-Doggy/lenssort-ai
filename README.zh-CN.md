@@ -1,90 +1,75 @@
 # LensSort AI
 
 <p align="center">
-  <strong>把照片放进文件夹，LensSort 负责整理</strong><br />
-  本地优先的 AI 照片分类工具，支持网页控制、人工修正和原图保护
+  <strong>一个帮我少翻几百张照片的小工具</strong><br />
+  在本地网页里选择文件夹、自动分类，再把分错的照片改回来
 </p>
 
 <p align="center">
   <a href="https://github.com/Old-Doggy/lenssort-ai/actions/workflows/validate.yml"><img src="https://github.com/Old-Doggy/lenssort-ai/actions/workflows/validate.yml/badge.svg" alt="构建状态" /></a>
-  <img src="https://img.shields.io/badge/运行方式-本地优先-0f766e" alt="本地优先" />
+  <img src="https://img.shields.io/badge/平台-Windows-f59e0b" alt="Windows" />
   <img src="https://img.shields.io/badge/许可证-MIT-7c3aed" alt="MIT 许可证" />
-  <img src="https://img.shields.io/badge/平台-Windows-f59e0b" alt="Windows 平台" />
 </p>
 
 <p align="center">
   <a href="README.md">English</a> ·
-  <a href="docs/technical-overview.md">技术总览</a> ·
-  <a href="CONTRIBUTING.md">参与贡献</a>
+  <a href="docs/getting-started.zh-CN.md">安装与使用</a> ·
+  <a href="docs/troubleshooting.zh-CN.md">常见问题</a> ·
+  <a href="docs/technical-overview.md">技术说明</a>
 </p>
 
 <p align="center">
-  <img src="src/assets/lenssort-cover.svg" alt="LensSort AI 照片整理工作台" width="900" />
+  <img src="src/assets/lenssort-cover.svg" alt="LensSort AI 本地照片分类工具示意图" width="900" />
 </p>
 
-## 它解决什么问题
+## 为什么做这个
 
-LensSort AI 面向几百张照片的本地整理场景：选择来源文件夹和输出文件夹，点击 **一键筛选**，照片就会自动分析并复制到分类目录
+我之前玩过摄影，想试着把 AI 用在整理照片这件小事上：一次处理几百张，先把人物、风景、动物这些大类分开，再自己看。
 
-支持的常见分类包括：`单人`、`多人`、`人物与风景`、`风景`、`动物`、`植物`、`其他` 和 `待确认`
+最初也想让它直接挑出“最好看”的照片，试下来觉得这件事太主观，所以现在把重心放在分类。挑片保留为辅助推荐，结果合不合口味，还是自己决定。
 
-## 核心体验
+## 现在能做什么
 
-- **网页控制**：选择文件夹、设备和模型，不需要逐张上传照片
-- **自动分类**：照片放入来源文件夹后，系统自动等待文件写入稳定并处理
-- **人工可控**：发现错误可以在网页上查看大图、删除输出副本或修改分类
-- **原图安全**：分类只复制输出副本，原图不移动、不改名、不删除
-- **本地运行**：基础分类不依赖 Ollama，图片不会发送到云端 API
-- **辅助推荐**：提供技术质量初筛，不把主观审美包装成准确答案
+- 按 `单人`、`多人`、`人物与风景`、`风景`、`动物`、`植物`、`其他`、`待确认` 分类
+- 在网页里选文件夹、看进度、打开大图、修改分类和删除分类副本
+- 分类只生成副本，不移动、不改名、不删除来源原图
+- 一批处理完自动停止；新增照片后，再点一次“一键筛选”
+- 点击“刷新当前文件夹”重新核对磁盘文件，移除失效的结果卡片
+- 可选用本地视觉模型补充图片解释，不把照片发到云端 API
 
-不确定的照片会进入 `待确认`，而不是被强行归入错误类别
+## 先跑起来
 
-## 三步运行
+目前主要支持 Windows。先安装 [Node.js 22.12 或更新版本](https://nodejs.org/)，下载仓库 ZIP 并解压，或使用 Git 克隆。
 
-### 1. 首次安装
+1. 双击 `首次安装.cmd`，等依赖、基础模型下载和网页构建完成；最后询问是否安装视觉模型，想先试用就选 `N`
+2. 双击 `启动网页控制.cmd`，保留启动窗口；网页没自动打开时，打开窗口中显示的地址，默认是 `http://127.0.0.1:4317`
+3. 选择照片来源和一个独立的结果文件夹，点击 **一键筛选**，等待 **分类完成，已自动停止**
 
-安装 Node.js `22.12+`，克隆仓库后双击 `首次安装.cmd`
+不要直接打开 `index.html`，文件夹访问需要本地服务。首次安装需要联网下载资源，日常照片分析在本机进行，不需要开机启动。
 
-脚本会安装依赖、浏览器运行时、基础模型并构建网页。最后可选择是否准备本地视觉大模型
+完整操作、退出方式和更新方法见 [安装与使用](docs/getting-started.zh-CN.md)，遇到问题先看 [常见问题](docs/troubleshooting.zh-CN.md)。
 
-### 2. 可选：启用自然语言图片解释
+## 要不要装大模型
 
-双击 `安装本地视觉模型.cmd`
+基础分类不需要 Ollama。想要本地看图解释和视觉复核，可以双击 `安装本地视觉模型.cmd`，按向导安装 Ollama 并下载默认的 `Qwen 3.5 4B`。
 
-脚本会在缺少时安装官方 Ollama，并默认下载 `Qwen 3.5 4B`。模型权重较大且有独立许可，因此不直接放入 GitHub
-
-### 3. 开始整理
-
-双击 `启动网页控制.cmd`，打开显示的本地地址，选择文件夹后点击 **一键筛选**
-
-不要直接双击 `index.html`，文件夹访问和进度更新需要本地控制服务
-
-## 模型选择
-
-| 模式 | 适合场景 |
+| 选项 | 我的使用建议 |
 | --- | --- |
-| 基础分析 | 不安装 Ollama，速度快，适合低配置电脑 |
-| Qwen 3.5 4B | 推荐日常使用，平衡速度、资源和描述能力 |
-| Gemma 3 4B | 兼容性基线 |
-| Qwen 3.5 9B | 主动选择的精度优先模式，需要更多内存和显存 |
+| 基础分析 | 先跑通流程，或电脑资源比较紧张时用 |
+| Qwen 3.5 4B | 日常优先尝试，兼顾效果与资源占用 |
+| Gemma 3 4B | 另一个可选方案，可以结合自己的照片比较 |
+| Qwen 3.5 9B | 资源充足时再试，更大不保证每张照片都更准 |
 
-网页会显示安装状态和资源建议；模型不足或资源紧张时，基础分类仍可独立运行
+网页会显示安装情况和资源建议。基础分类设备与 Ollama 模型设备分开显示；选中了 NPU 也不代表已经用上，实际运行证据会在处理后给出。
 
-## 重要边界
+## 还有哪些不足
 
-- 这是本地优先的工程型工具，不承诺所有复杂照片都能正确识别
-- `辅助推荐` 只用于减少浏览时间，不代表个人审美判断
-- NPU 是否可用取决于 Windows ML、驱动和设备；页面只展示实际探测到的路径
-- 本地控制服务只应绑定本机，不要暴露到公网
-- 第三方模型和依赖可能有独立许可证，详见 [`docs/model-sources.md`](docs/model-sources.md)
+口罩、遮挡、雕像、远处的小人、模糊和复杂场景仍可能分错，需要人工确认。辅助推荐也只是帮忙缩小浏览范围，不是审美结论。欢迎通过 Issue 提供复现步骤，分享前记得去掉个人照片和路径。
 
-## 文档入口
+## 其他文档
 
-- [`技术总览`](docs/technical-overview.md)：架构、模型、硬件、隐私和验证边界
-- [`模型资源说明`](public/models/README.md)：基础模型和本地视觉模型安装
-- [`贡献指南`](CONTRIBUTING.md)：开发、测试和提交要求
-- [`安全与隐私`](SECURITY.md)：漏洞报告和本地服务边界
+- [技术说明](docs/technical-overview.md)：结构、模型和硬件路径
+- [模型资源](public/models/README.md) · [模型来源与许可](docs/model-sources.md)
+- [参与开发](CONTRIBUTING.md) · [安全与隐私](SECURITY.md)
 
-## 许可证
-
-应用源代码采用 MIT License，详见 [`LICENSE`](LICENSE)
+源代码使用 [MIT License](LICENSE)，第三方模型按各自许可使用
