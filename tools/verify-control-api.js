@@ -30,6 +30,11 @@ try {
   assert.equal(status.phase, 'stopped')
   assert.equal(status.progress.phase, 'finished')
   const recordId = status.records[0].id
+  assert.equal(status.records[0].favorite, false)
+  assert.equal((await request('/api/toggle-favorite', { id: recordId, favorite: true })).status, 200)
+  assert.equal((await get()).records.find(record => record.id === recordId).favorite, true)
+  assert.equal((await request('/api/toggle-favorite', { id: recordId, favorite: false })).status, 200)
+  assert.equal((await get()).records.find(record => record.id === recordId).favorite, false)
   assert.equal((await fetch(origin + '/api/thumbnail/' + recordId)).status, 200)
   const detailResponse = await fetch(origin + '/api/photo/' + recordId)
   assert.equal(detailResponse.status, 200)
@@ -59,7 +64,7 @@ try {
   assert.deepEqual(await readFile(path.join(config.input, 'portrait.jpg')), sourceBytes)
   assert.equal((await get()).records.some(record => record.id === recordId), false)
   assert.equal((await fetch(origin + '/data/service-state/records.json')).status, 404)
-  const report = { status: 'passed', createdAt: new Date().toISOString(), workspace, checks: ['token guard', 'absolute-path validation', 'configure/start via HTTP', 'photo automatically appears with thumbnail', 'detail and bounded large-image endpoints', 'manual category update moves output copy and preserves source', 'delete confirmation required', 'HTTP stop releases service', 'delete output copy while preserving source bytes', 'private data not statically served'], device: status.device }
+  const report = { status: 'passed', createdAt: new Date().toISOString(), workspace, checks: ['token guard', 'absolute-path validation', 'configure/start via HTTP', 'photo automatically appears with thumbnail', 'favorite state toggles without changing category', 'detail and bounded large-image endpoints', 'manual category update moves output copy and preserves source', 'delete confirmation required', 'HTTP stop releases service', 'delete output copy while preserving source bytes', 'private data not statically served'], device: status.device }
   await writeFile('artifacts/control-api-verification.json', JSON.stringify(report, null, 2))
   console.log(JSON.stringify(report, null, 2))
 } finally { await server.close() }

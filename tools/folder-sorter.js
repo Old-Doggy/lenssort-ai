@@ -157,6 +157,18 @@ export async function updateFolderCategory({ stateDir, output, source, category 
   return updated
 }
 
+export async function toggleFolderFavorite({ stateDir, source, favorite }) {
+  if (typeof source !== 'string' || typeof favorite !== 'boolean') throw new Error('收藏状态无效')
+  const stateFile = path.join(path.resolve(stateDir), 'records.json')
+  const state = JSON.parse(await readFile(stateFile, 'utf8'))
+  const record = state.sources?.[source]
+  if (!record || record.status !== 'done') throw new Error('只有已完成分类的照片可以收藏')
+  const next = { ...record, favorite, favoriteAt: favorite ? new Date().toISOString() : undefined }
+  state.sources[source] = next
+  await writeAtomicJson(stateFile, state)
+  return next
+}
+
 export async function createFolderSorter(options) {
   if (typeof options.analyze !== 'function') throw new Error('analyze is required')
   const analysisVersion = options.analysisVersion ?? 1

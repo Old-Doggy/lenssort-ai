@@ -7,7 +7,7 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import sharp from 'sharp'
 import { analyzePhotoQuality, createPhotoAnalyzer } from './local-photo-analyzer.js'
-import { createFolderSorter, deleteFolderOutput, rescanFolderState, updateFolderCategory } from './folder-sorter.js'
+import { createFolderSorter, deleteFolderOutput, rescanFolderState, toggleFolderFavorite, updateFolderCategory } from './folder-sorter.js'
 import { listInferenceDevices } from './inference-devices.js'
 import { curatePhotos, validatePhotoSource } from './photo-curator.js'
 import { applyPublicReviewLabel, readPublicReview, resolveReviewSource, reviewStatus } from './public-review.js'
@@ -111,7 +111,7 @@ export async function createControlServer({ root, controlDir = path.join(root, '
           }
         }
         if (status !== 'done' && status !== 'failed') return null
-        return { id: recordId(source), name: path.basename(source), status, manualAction: record.manualAction ?? null, manualCategory: record.manualCategory ?? null, manualCategoryAt: record.manualCategoryAt ?? null, deletedAt: record.deletedAt ?? null, category: record.result?.category, sceneLabel: record.result?.sceneLabel ?? null, reason: record.result?.reason, explanation: record.result?.explanation ?? null, hash: record.hash, qualityScore: record.result?.qualityScore, qualityReasons: record.result?.qualityReasons ?? [], clarityScore: record.result?.clarityScore, exposureStatus: record.result?.exposureStatus, faceCount: record.result?.faces?.faceCount ?? 0, faceAreaRatio: record.result?.faces?.faceAreaRatio ?? 0, error, backend: record.result?.backend, device: record.result?.device, durationMs: record.result?.durationMs, npuVerified: record.result?.npuVerified ?? false, npuEvidence: record.result?.npuEvidence ?? null, modelEvidence: record.result?.modelEvidence ?? null, personDetection: record.result?.personDetection ?? null, sceneSemantics: record.result?.sceneSemantics ?? null, visionTriggered: record.result?.visionTriggered ?? false, visionTriggerReason: record.result?.visionTriggerReason ?? null, visionCategoryApplied: record.result?.visionCategoryApplied ?? false, visionExplanation: record.result?.visionExplanation ?? null, visionModelStatus: record.result?.visionModelStatus ?? null, aestheticScore: record.result?.aestheticScore ?? null, aestheticNormalizedScore: record.result?.aestheticNormalizedScore ?? null, completedAt: record.completedAt, output: record.output, curated: status === 'done' && curatedIds.has(recordId(source)), source }
+        return { id: recordId(source), name: path.basename(source), status, favorite: record.favorite === true, favoriteAt: record.favoriteAt ?? null, manualAction: record.manualAction ?? null, manualCategory: record.manualCategory ?? null, manualCategoryAt: record.manualCategoryAt ?? null, deletedAt: record.deletedAt ?? null, category: record.result?.category, sceneLabel: record.result?.sceneLabel ?? null, reason: record.result?.reason, explanation: record.result?.explanation ?? null, hash: record.hash, qualityScore: record.result?.qualityScore, qualityReasons: record.result?.qualityReasons ?? [], clarityScore: record.result?.clarityScore, exposureStatus: record.result?.exposureStatus, faceCount: record.result?.faces?.faceCount ?? 0, faceAreaRatio: record.result?.faces?.faceAreaRatio ?? 0, error, backend: record.result?.backend, device: record.result?.device, durationMs: record.result?.durationMs, npuVerified: record.result?.npuVerified ?? false, npuEvidence: record.result?.npuEvidence ?? null, modelEvidence: record.result?.modelEvidence ?? null, personDetection: record.result?.personDetection ?? null, sceneSemantics: record.result?.sceneSemantics ?? null, visionTriggered: record.result?.visionTriggered ?? false, visionTriggerReason: record.result?.visionTriggerReason ?? null, visionCategoryApplied: record.result?.visionCategoryApplied ?? false, visionExplanation: record.result?.visionExplanation ?? null, visionModelStatus: record.result?.visionModelStatus ?? null, aestheticScore: record.result?.aestheticScore ?? null, aestheticNormalizedScore: record.result?.aestheticNormalizedScore ?? null, completedAt: record.completedAt, output: record.output, curated: status === 'done' && curatedIds.has(recordId(source)), source }
       }))).filter(Boolean).map(record => ({ ...record, subjectQuality: state.sources[record.source]?.result?.subjectQuality ?? null, curationDetails: record.curated ? curatedDetails.get(record.id) ?? null : null }))
     } catch (error) { if (error.code === 'ENOENT') return []; throw error }
   }
@@ -220,6 +220,13 @@ export async function createControlServer({ root, controlDir = path.join(root, '
             ? await sorter.updateCategory(record.source, payload.category)
             : await updateFolderCategory({ stateDir: stateDir(), output: config.output, source: record.source, category: payload.category })
           json(response, 200, { phase, config, updated: true, originalPreserved: true, category: updated.result.category }); return
+        } else if (route === '/api/toggle-favorite') {
+          if (phase !== 'stopped' || curating) throw Object.assign(new Error('请等待本批处理结束后再收藏照片'), { status: 409 })
+          if (typeof payload.id !== 'string' || typeof payload.favorite !== 'boolean') throw Object.assign(new Error('请提供有效的收藏状态'), { status: 400 })
+          const record = (await records()).find(item => item.id === payload.id)
+          if (!record?.source) throw Object.assign(new Error('找不到可收藏的照片'), { status: 404 })
+          const updated = await toggleFolderFavorite({ stateDir: stateDir(), source: record.source, favorite: payload.favorite })
+          json(response, 200, { phase, config, updated: true, favorite: updated.favorite === true }); return
         } else if (route === '/api/rescan') {
           if (curating) throw Object.assign(new Error('正在精选，请稍候再重新扫描'), { status: 409 })
           const summary = sorter
