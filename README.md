@@ -1,8 +1,8 @@
 # LensSort AI
 
 <p align="center">
-  <strong>A Windows photo sorter I built for my own folders</strong><br />
-  Pick a folder, run one batch, and review the result in a local browser page
+  <strong>A local photo sorter for people who enjoy taking pictures</strong><br />
+  Let LensSort handle the repetitive part, then spend time on the photos worth keeping
 </p>
 
 <p align="center">
@@ -24,7 +24,9 @@
 
 ## Why I made it
 
-I wanted a simpler way to deal with a few hundred photos after a trip or a photo walk. The first version was only a classifier. I kept the browser control page because it makes the important actions easy to see: choose folders, start one batch, inspect a photo, and correct a mistake.
+I enjoy taking photos, but sorting them afterwards is the part I keep putting off. After a trip or a photo walk, a few hundred images can end up mixed together, and a surprising amount of time goes into separating people, scenery, animals, and everything else. I built LensSort to take care of that repetitive first pass locally, so I can spend more time actually looking through the photos.
+
+I also tried to make it choose the “best-looking” photos automatically. That turned out to be much more subjective than a score suggests: the right photo depends on the purpose of the shoot, the memory behind it, and personal taste. The project therefore focuses on clear, reviewable classification. Assisted recommendations are there to narrow the list, while the final choice stays with the person who took the photos.
 
 LensSort works on copies in an output folder. The original folder is left alone, so it is safe to review the result before doing anything else with the photos.
 
