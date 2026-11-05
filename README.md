@@ -2,7 +2,7 @@
 
 <p align="center">
   <strong>A local photo sorter for people who enjoy taking pictures</strong><br />
-  Let LensSort handle the repetitive part, then spend time on the photos worth keeping
+  Sort the first pass locally. Keep the final say.
 </p>
 
 <p align="center">
@@ -24,11 +24,22 @@
 
 ## Why I made it
 
-I enjoy taking photos, but sorting them afterwards is the part I keep putting off. After a trip or a photo walk, a few hundred images can end up mixed together, and a surprising amount of time goes into separating people, scenery, animals, and everything else. I built LensSort to take care of that repetitive first pass locally, so I can spend more time actually looking through the photos.
+I enjoy taking photos, but sorting them afterwards is the part I keep putting off. After a trip or a photo walk, a few hundred images can sit in one folder for weeks. The first useful step is often simple: separate people, scenery, animals, plants, and the shots that need a closer look.
 
-I also tried to make it choose the “best-looking” photos automatically. That turned out to be much more subjective than a score suggests: the right photo depends on the purpose of the shoot, the memory behind it, and personal taste. The project therefore focuses on clear, reviewable classification. Assisted recommendations are there to narrow the list, while the final choice stays with the person who took the photos.
+LensSort is my attempt to make that first pass less tedious. It runs locally, puts the results into copies, and leaves room for me to inspect the photos and correct the labels. I once tried to make it decide which images were “the best,” but that quickly became too dependent on the purpose of a shoot, the memory behind a frame, and personal taste. The current project treats recommendations as a shortlist, while the final choice stays with the photographer.
 
 LensSort works on copies in an output folder. The original folder is left alone, so it is safe to review the result before doing anything else with the photos.
+
+## Privacy first
+
+Photos are read from local folders and are not sent to a cloud image API. Basic classification works without Ollama. The optional natural-language explanation uses a vision model running through Ollama on the same computer.
+
+This public repository contains source code, documentation, and the small resources required to install the project. It does not contain:
+
+- personal photos or screenshots
+- personal absolute paths or machine-specific reports
+- generated outputs or runtime caches
+- model weights, API keys, or access tokens
 
 ## What it does
 
@@ -67,21 +78,21 @@ Do not double-click `index.html`. The browser page needs the local control servi
 
 1. Choose the photo source folder
 2. Choose a separate output folder
-3. Pick `自动选择` or a detected CPU / GPU / NPU device
-4. Click **一键筛选**
-5. Wait for **分类完成，已自动停止**
+3. Pick `自动选择` (`Auto`) or a detected CPU, GPU, or NPU device
+4. Click `一键筛选` (`Start sorting`)
+5. Wait for `分类完成，已自动停止` (`Sorting complete`)
 
 The batch processes the files that are present when it starts. It does not keep watching the folder after completion. Put new photos in the folder and click **一键筛选** again when you want another batch.
 
 ### 4. Review the result
 
-Use the category buttons to browse. Open **查看详情** to see the photo, the plain-language explanation, and the optional technical details. If a label is wrong, use **修改分类**. The change moves only the output copy; the source photo stays where it is.
+Use the category buttons to browse. Open `查看详情` (`View details`) to see the photo, the plain-language explanation, and the optional technical details. If a label is wrong, use `修改分类` (`Change category`). The change moves only the output copy; the source photo stays where it is.
 
 ## Optional image explanations
 
 The classifier and the natural-language explanation are separate pieces.
 
-To add the explanation feature, double-click `安装本地视觉模型.cmd`. It installs the official Ollama application when needed and prepares `qwen3.5:4b` by default. The model is several gigabytes, so it is downloaded on the first install and is not stored in this repository.
+To add the explanation feature, double-click `安装本地视觉模型.cmd` (`Install local vision model`). It installs the official Ollama application when needed and prepares `qwen3.5:4b` by default. The model is several gigabytes, so it is downloaded on the first install and is not stored in this repository.
 
 You can also choose another supported model from the page after installing it:
 
